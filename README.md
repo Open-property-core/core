@@ -1,95 +1,97 @@
 # Open Property Core
 
-**Фреймворк для управления недвижимостью (Property / Facility Management).**  
-Self-hosted, open-core, с моделью «бесплатно до $100K выручки».
+**Property and facility management framework.**  
+Self-hosted, open-core, with a "free until $100K revenue" model.
 
 ---
 
-## Что это
+## What it is
 
-Open Property Core — это не «ещё один CRM для риелторов», а **ядро цифровой платформы** для:
+Open Property Core is not "another real estate CRM" — it's the **core of a digital platform** for:
 
-- **Управляющих компаний** — объекты, договоры, платежи, учёт
-- **Коммерческой аренды** — офисы, склады, коворкинги
-- **Коливингов и хостелов** — бронирования, доступ, биллинг
-- **Proptech** — интеграция с умными замками, датчиками, биллингом
+- **Property management companies** — properties, contracts, payments, accounting
+- **Commercial real estate** — offices, warehouses, coworking spaces
+- **Colivings and hostels** — bookings, access, billing
+- **Proptech** — integration with smart locks, sensors, billing systems
 
-Модель как у GitLab: один код, разные «роли» — бесплатное ядро для малого бизнеса, платные возможности для масштаба и комплаенса.
-
----
-
-## Лицензия и модель
-
-| Уровень | Кто | Условия |
-|--------|-----|--------|
-| **Community** | Все | Бесплатно навсегда при выручке &lt; $100K/год |
-| **Enterprise** | Крупный бизнес, комплаенс | Лицензия + поддержка, SLA, юридическая ответственность |
-
-- **Ядро:** [Business Source License (BSL)](LICENSE) с автоматической конвертацией в Apache 2.0 через 4 года.
-- **Детали:** [docs/LICENSE.md](docs/LICENSE.md).
+The model is like GitLab: one codebase, different "tiers" — free core for small business, paid features for scale and compliance.
 
 ---
 
-## Стек
+## License and model
+
+| Tier | Who | Terms |
+|------|-----|-------|
+| **Community** | Everyone | Free forever when revenue &lt; $100K/year |
+| **Enterprise** | Large business, compliance | License + support, SLA, legal liability |
+
+- **Core:** [Business Source License (BSL)](LICENSE) with automatic conversion to Apache 2.0 after 4 years.
+- **Details:** [docs/LICENSE.md](docs/LICENSE.md).
+
+---
+
+## Stack
 
 - **Backend:** Django 5 + Django REST Framework + Celery
 - **Frontend:** Vite + React + TypeScript (ESLint, Prettier)
-- **БД:** PostgreSQL
-- **Очереди:** Redis (Celery broker)
-- **Self-hosted:** Docker Compose из коробки
+- **Database:** PostgreSQL
+- **Queues:** Redis (Celery broker)
+- **Self-hosted:** Docker Compose out of the box
 
 ---
 
-## Документация
+## Documentation
 
-| Документ | Описание |
-|----------|----------|
-| [Первые шаги](docs/FIRST_STEPS.md) | Что сделать в первую очередь: репозиторий, лицензия, каркас |
-| [Архитектура](docs/ARCHITECTURE.md) | Модули, границы, API, интеграции |
-| [Дорожная карта](docs/ROADMAP.md) | Community vs Enterprise, фазы развития |
-| [Лицензия](docs/LICENSE.md) | BSL, пороги, коммерческое использование |
-| [Участие](docs/CONTRIBUTING.md) | CLA, ветки, код-ревью |
+| Document | Description |
+|----------|-------------|
+| [First Steps](docs/FIRST_STEPS.md) | What to do first: repository, license, scaffolding |
+| [Architecture](docs/ARCHITECTURE.md) | Modules, boundaries, API, integrations |
+| [Roadmap](docs/ROADMAP.md) | Community vs Enterprise, development phases |
+| [License](docs/LICENSE.md) | BSL, thresholds, commercial use |
+| [Contributing](docs/CONTRIBUTING.md) | CLA, branches, code review |
 
 ---
 
-## Быстрый старт
+## Quick start
 
 ```bash
-git clone https://github.com/your-org/openpropertycore.git
+git clone https://github.com/Open-property-core/core.git
 cd openpropertycore
 cp .env.example .env
 docker compose up -d
 ```
 
-**Локальная разработка (backend):** зависимости ставим через [uv](https://docs.astral.sh/uv/) по умолчанию:
+**Local development (backend):** dependencies via [uv](https://docs.astral.sh/uv/) by default:
 
 ```bash
 cd backend
 uv sync
-source .venv/bin/activate   # или на Windows: .venv\Scripts\activate
+source .venv/bin/activate   # or on Windows: .venv\Scripts\activate
 python manage.py runserver
 ```
 
-С dev-инструментами (Black, isort, flake8, mypy, pytest): `uv sync --extra dev`, затем `make format`, `make lint`, `make typecheck`, `make test` (или `make check` — всё сразу). Тесты используют SQLite in-memory (`opc.settings_test`), без PostgreSQL. Либо классически: `uv pip install -r requirements.txt` в своём venv. В Docker образе сборка уже идёт через uv.
+With dev tools (Black, isort, flake8, mypy, pytest): `uv sync --extra dev`, then `make format`, `make lint`, `make typecheck`, `make test` (or `make check` — all at once). Tests use SQLite in-memory (`opc.settings_test`), no PostgreSQL needed. Alternatively: `uv pip install -r requirements.txt` in your venv. Docker build already uses uv.
 
-Порты на хосте (не дефолтные, чтобы не конфликтовать с другими проектами):
+Host ports (non-default to avoid conflicts with other projects):
 
-- **API:** http://localhost:8080/api/v1/ (JWT: `POST /api/v1/token/` с `username`/`password`)
+- **API:** http://localhost:8080/api/v1/ (JWT: `POST /api/v1/token/` with `username`/`password`)
 - **OpenAPI schema:** http://localhost:8080/api/schema/
-- **Django Admin:** http://localhost:8080/admin/ (создайте суперпользователя: `docker compose run --no-deps backend python manage.py createsuperuser`)
-- **Проверка Celery:** `POST http://localhost:8080/api/v1/trigger-hello-celery/`
-- **PostgreSQL:** localhost:5433 (логин/пароль из `.env`)
+- **Django Admin:** http://localhost:8080/admin/ (create superuser: `docker compose run --no-deps backend python manage.py createsuperuser`)
+- **Celery test:** `POST http://localhost:8080/api/v1/trigger-hello-celery/`
+- **PostgreSQL:** localhost:5433 (credentials in `.env`)
 - **Redis:** localhost:6380
 
-Контейнеры без `restart: always` — останавливаются по `docker compose down`.
+Containers run without `restart: always` — they stop with `docker compose down`.
 
-**Тесты (backend):** `cd backend && uv sync --extra dev && uv run pytest`. **Frontend:** в `frontend/` — `npm install && npm run dev`. Линт и формат: `npm run lint`, `npm run format` / `npm run format:check`. См. [frontend/README.md](frontend/README.md).
+**Tests (backend):** `cd backend && uv sync --extra dev && uv run pytest`. **Frontend:** in `frontend/` — `npm install && npm run dev`. Lint and format: `npm run lint`, `npm run format` / `npm run format:check`. See [frontend/README.md](frontend/README.md).
 
-**CI:** на push/PR запускается [.github/workflows/ci.yml](.github/workflows/ci.yml) (backend: pytest, black, isort, flake8; frontend: eslint, prettier).
+**CI:** on push/PR, [.github/workflows/ci.yml](.github/workflows/ci.yml) runs (backend: pytest, black, isort, flake8; frontend: eslint, prettier).
+
+**E2E tests:** see [frontend/e2e/README.md](frontend/e2e/README.md). Run `npm run e2e` in `frontend/` (requires backend + frontend running).
 
 ---
 
-## Контакты
+## Contact
 
-- Issues / обсуждение: GitHub Issues (после создания репозитория)
-- Документация и решения по продукту — в папке `docs/`
+- Issues / discussion: GitHub Issues
+- Documentation and product decisions — in the `docs/` folder

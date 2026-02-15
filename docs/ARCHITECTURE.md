@@ -1,32 +1,32 @@
-# Архитектура Open Property Core
+# Open Property Core Architecture
 
-Документ описывает высокоуровневую архитектуру: модули, границы, технологии и принципы. Детали реализации — в коде и ADR (Architecture Decision Records) при появлении.
+This document describes the high-level architecture: modules, boundaries, technologies, and principles. Implementation details — in code and ADRs (Architecture Decision Records) when they appear.
 
-- **Фронтенд:** [Feature-Sliced Design](FRONTEND_ARCHITECTURE.md) — слои app → pages → widgets → features → entities → shared.
-- **Бэкенд (DRF):** [DDD Django-style](BACKEND_ARCHITECTURE.md) — bounded contexts (Django apps), сервисы, тонкий API-слой.
-
----
-
-## Цели и ограничения
-
-- **Self-hosted first** — развёртывание у клиента или в своём облаке без привязки к одному вендору.
-- **Open core** — ядро под BSL, прозрачная граница Community / Enterprise.
-- **Proptech-ready** — учёт объектов, договоров, платежей; запас по интеграциям (IoT, умные замки, биллинг).
-- **Комплаенс** — в Enterprise: аудит, документооборот, отчётность (NIS2, 152-ФЗ и т.п.).
+- **Frontend:** [Feature-Sliced Design](FRONTEND_ARCHITECTURE.md) — layers app → pages → widgets → features → entities → shared.
+- **Backend (DRF):** [DDD Django-style](BACKEND_ARCHITECTURE.md) — bounded contexts (Django apps), services, thin API layer.
 
 ---
 
-## Высокоуровневая схема
+## Goals and constraints
+
+- **Self-hosted first** — deploy at the customer or in your own cloud without vendor lock-in.
+- **Open core** — core under BSL, transparent Community / Enterprise boundary.
+- **Proptech-ready** — properties, contracts, payments; room for integrations (IoT, smart locks, billing).
+- **Compliance** — in Enterprise: audit, document flow, reporting (NIS2, etc.).
+
+---
+
+## High-level diagram
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        Клиенты / Интеграции                       │
+│                     Clients / Integrations                        │
 └─────────────────────────────────────────────────────────────────┘
                     │                    │                    │
                     ▼                    ▼                    ▼
 ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
 │   Admin UI   │  │ Tenant Portal│  │  REST API    │  │  Webhooks /  │
-│  (React/Vue) │  │  (опционально)│  │(Django/Nest) │  │  Integrations │
+│  (React/Vue) │  │ (optional)   │  │(Django/Nest) │  │  Integrations │
 └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘
        │                 │                 │                 │
        └─────────────────┴────────┬────────┴─────────────────┘
@@ -41,119 +41,119 @@
        ▼                         ▼                         ▼
 ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
 │  PostgreSQL  │  │    Redis     │  │   Queues     │  │  File Store  │
-│  (основные   │  │  (кэш,       │  │  (фоны,      │  │  (S3-совм.)  │
-│   данные)    │  │   сессии)    │  │   задачи)    │  │              │
+│  (primary    │  │  (cache,     │  │  (background │  │  (S3-compat) │
+│   data)      │  │   sessions)  │  │   tasks)     │  │              │
 └──────────────┘  └──────────────┘  └──────────────┘  └──────────────┘
 ```
 
 ---
 
-## Выбор стека бэкенда: Django vs NestJS
+## Backend stack choice: Django vs NestJS
 
-Оба варианта подходят для Open Property Core. Итог ниже; выбор можно зафиксировать в ADR при первом коммите.
+Both suit Open Property Core. Summary below; the choice can be recorded in an ADR on first commit.
 
-| Критерий | Django (Python) | NestJS (Node.js/TypeScript) |
-|----------|-----------------|-----------------------------|
-| **Скорость до MVP** | Выше: Django Admin из коробки, DRF, миграции, админка за часы | Нужно поднимать админку отдельно (React/Vue) или брать AdminJS |
-| **Админка** | Встроенная, расширяемая (кастомные формы, действия, права) | Отдельное SPA или сторонние решения (AdminJS, React-Admin) |
-| **API** | DRF: сериализаторы, ViewSet, OpenAPI через drf-spectacular | Контроллеры, DTO, Swagger из коробки, строгая типизация |
-| **Очереди/фоны** | Celery + Redis — стандарт, зрелый | Bull/BullMQ — нативный для Node, проще один runtime |
-| **Типизация** | Опционально (type hints, mypy) | TypeScript по умолчанию, строже на этапе компиляции |
-| **Экосистема B2B/ERP** | Ближе: ERPNext (Frappe), много отчётности/интеграций на Python | Много SaaS/API на Node; для тяжёлой логики и отчётов часто тянут Python |
-| **Один runtime** | Нет: API на Python, фронт на JS — два стека | Да: бэкенд и фронт на JS/TS, общие типы при монорепо |
-| **Proptech / IoT** | Удобно: asyncio, библиотеки для протоколов, скрипты | Удобно: событийная модель, стримы, реальное время |
-| **Хостинг** | Любой VPS с Python; меньше «памяти на процесс», чем у Node при равной нагрузке | То же; Node хорошо масштабируется по числу инстансов |
+| Criterion | Django (Python) | NestJS (Node.js/TypeScript) |
+|-----------|-----------------|-----------------------------|
+| **Speed to MVP** | Higher: Django Admin out of the box, DRF, migrations, admin in hours | Need separate admin (React/Vue) or use AdminJS |
+| **Admin UI** | Built-in, extensible (custom forms, actions, permissions) | Separate SPA or third-party (AdminJS, React-Admin) |
+| **API** | DRF: serializers, ViewSet, OpenAPI via drf-spectacular | Controllers, DTO, Swagger built-in, strong typing |
+| **Queues/background** | Celery + Redis — standard, mature | Bull/BullMQ — native for Node, single runtime easier |
+| **Typing** | Optional (type hints, mypy) | TypeScript by default, stricter at compile time |
+| **B2B/ERP ecosystem** | Closer: ERPNext (Frappe), reporting/integrations in Python | Many SaaS/APIs on Node; heavy logic often uses Python |
+| **Single runtime** | No: API in Python, frontend in JS — two stacks | Yes: backend and frontend on JS/TS, shared types in monorepo |
+| **Proptech / IoT** | Good: asyncio, protocol libraries, scripts | Good: event model, streams, real-time |
+| **Hosting** | Any VPS with Python; less memory per process than Node at similar load | Same; Node scales well by instance count |
 
-**Когда логичнее Django:**
+**When Django makes more sense:**
 
-- Хотите быстрее выйти в прод с работающей админкой и CRUD без отдельной фронт-разработки.
-- Планируете тяжёлую отчётность, интеграции с 1С/бухгалтерией, скрипты — в экосистеме Python это часто проще.
-- Команда или вы сильнее в Python.
+- You want to reach production faster with a working admin and CRUD without separate frontend work.
+- You plan heavy reporting, 1C/accounting integrations, scripts — Python ecosystem often simplifies this.
+- You or your team are stronger in Python.
 
-**Когда логичнее NestJS:**
+**When NestJS makes more sense:**
 
-- Нужен один язык (TypeScript) для API и фронта, общие типы и монорепо.
-- Упор на современный SPA (React/Vue) с самого начала, админка — кастомная.
-- Опыт и предпочтение Node/TS.
+- You want one language (TypeScript) for API and frontend, shared types and monorepo.
+- Focus on modern SPA (React/Vue) from the start, custom admin.
+- Experience and preference for Node/TS.
 
-**Рекомендация для Open Property Core:** если приоритет — быстрый старт и «админка из коробки», **Django + DRF** даёт выигрыш по времени. Если важнее единый TypeScript-стек и кастомный UI — **NestJS**. Оба стека допускают одну и ту же доменную модель и границы модулей из этого документа.
+**Recommendation for Open Property Core:** if priority is fast start and "admin out of the box", **Django + DRF** wins on time. If unified TypeScript stack and custom UI matter more — **NestJS**. Both stacks allow the same domain model and module boundaries from this document.
 
 ---
 
-## Стек (целевой)
+## Target stack
 
-Ниже — вариант с **двумя допустимыми бэкендами**; при реализации выбирается один.
+Below — two viable backends; pick one for implementation.
 
-| Слой | Вариант A (Django) | Вариант B (NestJS) | Общее |
-|------|--------------------|--------------------|--------|
+| Layer | Option A (Django) | Option B (NestJS) | Common |
+|-------|-------------------|-------------------|--------|
 | Backend | Python 3.11+, Django 5.x, Django REST Framework | Node.js 20+, NestJS, TypeScript | — |
-| API | REST, drf-spectacular (OpenAPI 3) | REST, Swagger/OpenAPI | Версионирование `/api/v1/...` |
-| Admin UI | Django Admin (расширяемый) или отдельный SPA | React/Vue + компонентная библиотека | — |
-| БД | PostgreSQL (Django ORM, миграции) | PostgreSQL (TypeORM/Prisma/Drizzle) | Одна схема домена |
-| Очереди | Celery + Redis | Bull/BullMQ + Redis | Фоны, отложенные задачи |
-| Файлы | django-storages (S3-совместимое) | Multer + S3 SDK или аналог | MinIO / AWS S3 |
-| Развёртывание | Docker, docker-compose | Docker, docker-compose | Self-hosted из коробки |
+| API | REST, drf-spectacular (OpenAPI 3) | REST, Swagger/OpenAPI | Versioning `/api/v1/...` |
+| Admin UI | Django Admin (extensible) or separate SPA | React/Vue + component library | — |
+| Database | PostgreSQL (Django ORM, migrations) | PostgreSQL (TypeORM/Prisma/Drizzle) | Same domain schema |
+| Queues | Celery + Redis | Bull/BullMQ + Redis | Background, deferred tasks |
+| Files | django-storages (S3-compatible) | Multer + S3 SDK or similar | MinIO / AWS S3 |
+| Deployment | Docker, docker-compose | Docker, docker-compose | Self-hosted out of the box |
 
 ---
 
-## Доменные модули (ядро)
+## Domain modules (core)
 
-Границы модулей — по предметной области, не по слоям.
+Module boundaries follow the domain, not technical layers.
 
-### 1. Property (Объекты недвижимости)
+### 1. Property (Real estate objects)
 
-- **Сущности:** Property, Unit (помещение/квартира), Building (при необходимости).
-- **Ответственность:** справочник объектов и помещений, типы, статусы, площадь, адрес.
-- **Интеграции (Enterprise):** геокодинг, кадастр (при необходимости).
+- **Entities:** Property, Unit (room/unit in a property), Building (if needed).
+- **Responsibility:** catalog of properties and units, types, statuses, area, address.
+- **Integrations (Enterprise):** geocoding, cadastre (if needed).
 
-### 2. Party (Контрагенты)
+### 2. Party (Counterparties)
 
-- **Сущности:** Party (физ./юр. лицо), контакты, роли (арендатор, арендодатель, управляющая компания).
-- **Ответственность:** единый справочник контрагентов для договоров и платежей.
+- **Entities:** Party (individual or legal entity), contacts, roles (tenant, landlord, property manager).
+- **Responsibility:** unified counterparty catalog for contracts and payments.
 
-### 3. Contract (Договоры)
+### 3. Contract (Contracts)
 
-- **Сущности:** Contract, условия (сроки, сумма, периодичность), статусы (черновик, активен, расторгнут).
-- **Ответственность:** жизненный цикл договора аренды/оказания услуг.
-- **Enterprise:** юридически значимый документооборот, шаблоны, подписание.
+- **Entities:** Contract, terms (dates, amount, frequency), statuses (draft, active, terminated).
+- **Responsibility:** contract lifecycle for leases/services.
+- **Enterprise:** legally binding document flow, templates, signing.
 
-### 4. Billing & Payments (Платежи)
+### 4. Billing & Payments
 
-- **Сущности:** Invoice, Payment, тарифы, начисления.
-- **Ответственность:** начисление и учёт оплат, связь с договорами.
-- **Enterprise:** интеграция с банками, касса, отчётность.
+- **Entities:** Invoice, Payment, rates, charges.
+- **Responsibility:** invoicing and payment tracking, link to contracts.
+- **Enterprise:** bank integration, cash register, reporting.
 
-### 5. Integrations (Интеграции)
+### 5. Integrations
 
-- **Ответственность:** вебхуки, исходящие API, адаптеры к внешним системам (1С, умные замки, биллинг).
-- **Enterprise:** приоритетный модуль для IoT и комплаенс-отчётности.
+- **Responsibility:** webhooks, outbound APIs, adapters for external systems (1C, smart locks, billing).
+- **Enterprise:** priority for IoT and compliance reporting.
 
-Модули общаются через доменные события и сервисы приложения; прямые зависимости между агрегатами минимизируются.
+Modules communicate via domain events and application services; direct dependencies between aggregates are minimized.
 
 ---
 
 ## API
 
-- **REST** с версионированием в URL или заголовке (`/api/v1/...`).
-- **OpenAPI 3** — описание обязательно, генерация клиентов и документации.
-- **Аутентификация:** JWT или сессии; для Enterprise — SSO/SAML.
-- **Мультитенантность:** на первом этапе — один тенант на инстанс; в перспективе — tenant_id в контексте (организация/УК).
+- **REST** with versioning in URL or header (`/api/v1/...`).
+- **OpenAPI 3** — description required, client and docs generation.
+- **Authentication:** JWT or sessions; for Enterprise — SSO/SAML.
+- **Multi-tenancy:** at first — one tenant per instance; later — tenant_id in context (organization).
 
 ---
 
-## Безопасность и комплаенс (Enterprise)
+## Security and compliance (Enterprise)
 
-- Аудит изменений критичных сущностей (кто, когда, что).
-- Роли и права (RBAC) — в ядре базовая модель, в Enterprise — детализация под NIS2/152-ФЗ.
-- Шифрование чувствительных данных (по необходимости).
-- SBOM и прозрачность зависимостей — для корпоративных клиентов.
+- Audit of changes to critical entities (who, when, what).
+- Roles and permissions (RBAC) — basic model in core, detailed for NIS2/compliance in Enterprise.
+- Encryption of sensitive data (as needed).
+- SBOM and dependency transparency — for enterprise customers.
 
 ---
 
-## Масштабирование (позже)
+## Scaling (later)
 
-- Горизонтальное масштабирование API за балансировщиком.
-- Очереди — отдельные воркеры.
-- БД — репликация, при росте — партиционирование по tenant_id или по времени.
+- Horizontal scaling of API behind a load balancer.
+- Queues — dedicated workers.
+- Database — replication; at scale — partitioning by tenant_id or time.
 
-Текущий фокус — корректная доменная модель и первый рабочий сценарий; масштабирование закладывается без преждевременной сложности.
+Current focus — correct domain model and first working scenario; scaling is designed in without premature complexity.

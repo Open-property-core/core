@@ -1,60 +1,60 @@
-# Участие в разработке (Contributing)
+# Contributing to Open Property Core
 
-Спасибо за интерес к Open Property Core. Ниже — как предложить изменения и что мы от вас ожидаем.
+Thank you for your interest in Open Property Core. Below is how to propose changes and what we expect from you.
 
 ---
 
 ## CLA (Contributor License Agreement)
 
-**Перед первым принятым PR вы должны подписать CLA.**
+**You must sign the CLA before your first PR is accepted.**
 
-- Без подписанного CLA мы не можем безопасно перелицензировать код (в т.ч. конвертация BSL → Apache 2.0).
-- Текст CLA: [docs/CLA.md](CLA.md).
-- Один раз подписали (указали в описании PR «I agree to the CLA in docs/CLA.md») — дальше можно слать патчи без повторной подписки (если условия CLA не меняются).
+- Without a signed CLA we cannot safely relicense code (including BSL → Apache 2.0 conversion).
+- CLA text: [docs/CLA.md](CLA.md).
+- Sign once (state in the PR description "I agree to the CLA in docs/CLA.md") — you can then send patches without signing again (unless CLA terms change).
 
-**PR без согласия с CLA не принимаются.** В первом PR укажите в описании: «I agree to the CLA in docs/CLA.md».
-
----
-
-## Как предложить изменение
-
-1. **Fork** репозитория.
-2. Создайте **ветку** от `main` (или от актуальной ветки разработки):
-   - `feature/short-description` — новая функциональность
-   - `fix/short-description` — исправление бага
-   - `docs/short-description` — только документация
-3. Внесите изменения, придерживаясь стиля кода и соглашений проекта.
-4. Добавьте/обновите тесты, если меняется логика.
-5. Убедитесь, что линтеры и тесты проходят (см. README или CI).
-6. Создайте **Pull Request** в `main` (или в целевую ветку из описания репо).
-7. В описании PR укажите:
-   - что сделано и зачем;
-   - ссылку на issue (если есть);
-   - что вы подписали CLA (когда CLA будет введён).
-
-Мы ревьюим PR в разумные сроки; возможны правки по замечаниям.
+**PRs without CLA agreement are not accepted.** In your first PR, include in the description: "I agree to the CLA in docs/CLA.md".
 
 ---
 
-## Стандарты кода
+## How to propose a change
 
-- Стиль и форматирование — по правилам проекта (например, ESLint/Prettier для JS/TS; конфиги в репо).
-- Коммиты — осмысленные сообщения, при необходимости на английском для единообразия.
-- Один PR — одна логическая задача; большие фичи лучше разбивать на несколько PR.
+1. **Fork** the repository.
+2. Create a **branch** from `main` (or the current development branch):
+   - `feature/short-description` — new feature
+   - `fix/short-description` — bug fix
+   - `docs/short-description` — documentation only
+3. Make changes following the project's code style and conventions.
+4. Add/update tests if logic is changed.
+5. Ensure linters and tests pass (see README or CI).
+6. Create a **Pull Request** to `main` (or the target branch from the repo description).
+7. In the PR description include:
+   - what was done and why;
+   - link to issue (if any);
+   - that you have signed the CLA.
 
-Детали (форматирование, тесты, типы) будут уточнены в README и в корневых конфигах после появления кода.
+We review PRs in a reasonable timeframe; revisions based on feedback are possible.
 
 ---
 
-## Вопросы и обсуждения
+## Code standards
 
-- **Баги и предложения фич** — через GitHub Issues (или аналог, указанный в README).
-- **Вопросы по архитектуре и дорожной карте** — тоже через Issues или обсуждения репозитория.
+- Style and formatting — per project rules (e.g. ESLint/Prettier for JS/TS; configs in the repo).
+- Commits — meaningful messages; use English where possible for consistency.
+- One PR — one logical change; split large features into multiple PRs.
 
-Мы стремимся отвечать в разумные сроки; при высокой загрузке возможны задержки.
+Details (formatting, tests, types) are in README and root configs as the codebase evolves.
 
 ---
 
-## Лицензия вашего вклада
+## Questions and discussion
 
-Отправляя код или документацию, вы соглашаетесь с тем, что ваш вклад будет распространяться под той же лицензией, что и проект (BSL с последующей конвертацией в Apache 2.0), в соответствии с подписанным CLA.
+- **Bug reports and feature requests** — via GitHub Issues (or the channel indicated in README).
+- **Architecture and roadmap questions** — also via Issues or repository discussions.
+
+We aim to respond in a reasonable time; delays may occur under high load.
+
+---
+
+## License of your contribution
+
+By submitting code or documentation, you agree that your contribution will be distributed under the same license as the project (BSL with future conversion to Apache 2.0), in accordance with the signed CLA.

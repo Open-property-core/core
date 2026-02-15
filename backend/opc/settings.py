@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "opc.apps.parties",
     "opc.apps.contracts",
     "opc.apps.billing",
+    "opc.apps.notifications",
 ]
 
 MIDDLEWARE = [
@@ -112,3 +113,11 @@ CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = TIME_ZONE
+
+# Email (for notifications)
+# Default: console backend (prints to stdout). Set EMAIL_BACKEND and SMTP env vars for production.
+EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "localhost")
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "25"))
+EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "0") == "1"
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "noreply@openpropertycore.local")

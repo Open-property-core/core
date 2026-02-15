@@ -1,13 +1,13 @@
-# Документация Open Property Core
+# Open Property Core Documentation
 
-| Документ | Описание |
-|----------|----------|
-| [Первые шаги (FIRST_STEPS.md)](FIRST_STEPS.md) | Пошаговый план: репозиторий, лицензия, каркас, первый сценарий |
-| [Архитектура (ARCHITECTURE.md)](ARCHITECTURE.md) | Модули, стек, домен, API, безопасность |
-| [Фронтенд: FSD](FRONTEND_ARCHITECTURE.md) | Feature-Sliced Design — слои, структура, правила импортов |
-| [Бэкенд: DDD](BACKEND_ARCHITECTURE.md) | DDD Django-style — bounded contexts, сервисы, API-адаптеры |
-| [Дорожная карта (ROADMAP.md)](ROADMAP.md) | Community vs Enterprise, фазы развития |
-| [Лицензия (LICENSE.md)](LICENSE.md) | BSL, порог $100K, коммерческое использование |
-| [Участие (CONTRIBUTING.md)](CONTRIBUTING.md) | CLA, ветки, код-ревью |
+| Document | Description |
+|----------|-------------|
+| [First Steps (FIRST_STEPS.md)](FIRST_STEPS.md) | Step-by-step plan: repository, license, scaffolding, first scenario |
+| [Architecture (ARCHITECTURE.md)](ARCHITECTURE.md) | Modules, stack, domain, API, security |
+| [Frontend: FSD](FRONTEND_ARCHITECTURE.md) | Feature-Sliced Design — layers, structure, import rules |
+| [Backend: DDD](BACKEND_ARCHITECTURE.md) | DDD Django-style — bounded contexts, services, API adapters |
+| [Roadmap (ROADMAP.md)](ROADMAP.md) | Community vs Enterprise, development phases |
+| [License (LICENSE.md)](LICENSE.md) | BSL, $100K threshold, commercial use |
+| [Contributing (CONTRIBUTING.md)](CONTRIBUTING.md) | CLA, branches, code review |
 
-Начинать лучше с [FIRST_STEPS.md](FIRST_STEPS.md).
+Start with [FIRST_STEPS.md](FIRST_STEPS.md).

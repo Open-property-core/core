@@ -27,6 +27,11 @@ node_modules/
 dist/
 build/
 
+# Playwright
+test-results/
+playwright-report/
+playwright/.cache/
+
 # IDE / OS
 .idea/
 .vscode/

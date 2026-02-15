@@ -1,34 +1,34 @@
-# Лицензия Open Property Core
+# Open Property Core License
 
-## Модель
+## Model
 
-- **Исходный код** распространяется под **Business Source License (BSL)**.
-- **Использование бесплатно**, если вы не являетесь конкурентом (не предлагаете сходный коммерческий продукт) **и** годовая выручка вашей организации **меньше $100 000 USD**.
-- Через **4 года** с даты первого публичного релиза соответствующий код переходит в **Apache License 2.0** (бессрочно открытый).
+- **Source code** is distributed under the **Business Source License (BSL)**.
+- **Use is free** if you are not a competitor (do not offer a similar commercial product) **and** your organization's annual revenue is **less than $100,000 USD**.
+- **4 years** after the date of the first public release, the corresponding code converts to **Apache License 2.0** (permanently open).
 
-Так мы защищаем проект от копирования облачными провайдерами в коммерческий SaaS без участия в развитии, при этом малый бизнес и стартапы используют продукт бесплатно.
-
----
-
-## Разрешено (в рамках BSL)
-
-- Использовать, изменять и распространять код.
-- Развёртывать у себя (on-premise или свой хостинг).
-- Использовать в коммерческих продуктах при соблюдении порога выручки и условий «не конкурент».
-
-## Требуется коммерческая лицензия
-
-- Использование в продукте, который конкурирует с Open Property Core (платформы управления недвижимостью как основной продукт).
-- Организации с выручкой **≥ $100 000 USD за последние 12 месяцев** (если используете в коммерческих целях).
-
-Для получения коммерческой лицензии — контакт через репозиторий (Issues или указанный способ связи).
+This protects the project from cloud providers copying it into a commercial SaaS without contributing, while small businesses and startups use the product for free.
 
 ---
 
-## Текст лицензии
+## Permitted (under BSL)
 
-Полный текст BSL находится в файле [../LICENSE](../LICENSE) в корне репозитория. Дату конвертации в Apache 2.0 можно уточнить в README или в самом файле LICENSE.
+- Use, modify, and distribute the code.
+- Deploy on your own premises (on-premise or your hosting).
+- Use in commercial products when the revenue threshold and "non-competitor" conditions are met.
 
-## Совместимость с контрибуциями
+## Commercial license required
 
-Все контрибуции принимаются только при подписании **CLA (Contributor License Agreement)**. Это даёт нам право использовать ваш код под BSL и в будущем под Apache 2.0. Подробности — в [CONTRIBUTING.md](CONTRIBUTING.md).
+- Use in a product that competes with Open Property Core (property management platforms as the main product).
+- Organizations with revenue **≥ $100,000 USD in the last 12 months** (when used for commercial purposes).
+
+For a commercial license — contact via the repository (Issues or the indicated contact method).
+
+---
+
+## License text
+
+The full BSL text is in [../LICENSE](../LICENSE) at the repository root. The conversion date to Apache 2.0 can be found in the README or in the LICENSE file itself.
+
+## Compatibility with contributions
+
+All contributions are accepted only with a signed **CLA (Contributor License Agreement)**. This allows us to use your code under BSL and later under Apache 2.0. Details — in [CONTRIBUTING.md](CONTRIBUTING.md).

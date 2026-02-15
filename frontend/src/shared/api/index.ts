@@ -1,4 +1,4 @@
-export { apiGet } from "./base";
+export { apiGet, apiPost } from "./base";
 export {
   getStoredToken,
   setStoredToken,

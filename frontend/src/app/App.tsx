@@ -2,11 +2,15 @@ import { AuthProvider, useAuth } from "@/app/providers";
 import { HomePage } from "@/pages/home";
 import { LoginPage } from "@/pages/login";
 import { PropertyListPage } from "@/pages/properties";
+import { PartyListPage } from "@/pages/parties";
+import { ContractListPage } from "@/pages/contracts";
 import { useState } from "react";
+
+type Page = "home" | "properties" | "parties" | "contracts";
 
 function AppContent() {
   const { isAuthenticated, setToken } = useAuth();
-  const [page, setPage] = useState<"home" | "properties">("properties");
+  const [page, setPage] = useState<Page>("properties");
 
   if (!isAuthenticated) {
     return <LoginPage onLoggedIn={(token) => setToken(token)} />;
@@ -21,8 +25,17 @@ function AppContent() {
         <button type="button" onClick={() => setPage("properties")}>
           Properties
         </button>
+        <button type="button" onClick={() => setPage("parties")}>
+          Parties
+        </button>
+        <button type="button" onClick={() => setPage("contracts")}>
+          Contracts
+        </button>
       </nav>
-      {page === "home" ? <HomePage /> : <PropertyListPage />}
+      {page === "home" && <HomePage />}
+      {page === "properties" && <PropertyListPage />}
+      {page === "parties" && <PartyListPage />}
+      {page === "contracts" && <ContractListPage />}
     </div>
   );
 }

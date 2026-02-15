@@ -1,107 +1,107 @@
-# Первые шаги — Open Property Core
+# First Steps — Open Property Core
 
-Пошаговый план, чтобы из «пустого репозитория» выйти к первому рабочему каркасу за 2–4 недели.
+A step-by-step plan to go from "empty repository" to a first working scaffold in 2–4 weeks.
 
 ---
 
-## Фаза 0: Юридическая и организационная база (1–3 дня)
+## Phase 0: Legal and organizational foundation (1–3 days)
 
-### 1. Репозиторий и видимость
+### 1. Repository and visibility
 
-- [ ] Создать Git-репозиторий (GitHub/GitLab).
-- [ ] Добавить описание и теги: `property-management`, `proptech`, `open-core`, `bsl`, `self-hosted`.
-- [ ] Решить: публичный с первого дня или приватный до первого релиза (рекомендация: публичный — быстрее доверие и контрибьюторы).
+- [ ] Create a Git repository (GitHub/GitLab).
+- [ ] Add description and tags: `property-management`, `proptech`, `open-core`, `bsl`, `self-hosted`.
+- [ ] Decide: public from day one or private until first release (recommended: public — faster trust and contributors).
 
-### 2. Лицензия
+### 2. License
 
-- [ ] Положить в корень файл `LICENSE` с текстом BSL (см. [docs/LICENSE.md](LICENSE.md)).
-- [ ] В README явно указать: «Community бесплатно при выручке < $100K/год».
-- [ ] Опционально: зафиксировать дату конвертации BSL → Apache 2.0 (например, «4 года с даты первого публичного релиза»).
+- [ ] Add a `LICENSE` file in the root with BSL text (see [docs/LICENSE.md](LICENSE.md)).
+- [ ] Clearly state in README: "Community is free when revenue < $100K/year".
+- [ ] Optional: fix the BSL → Apache 2.0 conversion date (e.g., "4 years from the date of first public release").
 
 ### 3. CLA (Contributor License Agreement)
 
-- [ ] Выбрать шаблон CLA (например, Harmony CLA или аналог).
-- [ ] Положить в репозиторий `CLA.md` или `docs/CLA.md` с текстом и инструкцией «подписать до первого merge».
-- [ ] Настроить проверку (bot или manual): PR без подписанного CLA не мержить.
+- [ ] Choose a CLA template (e.g., Harmony CLA or similar).
+- [ ] Add `CLA.md` or `docs/CLA.md` in the repository with text and instructions to "sign before first merge".
+- [ ] Set up verification (bot or manual): do not merge PRs without signed CLA.
 
-Без CLA вы не сможете безопасно перелицензировать код в Enterprise.
+Without CLA you cannot safely relicense code for Enterprise.
 
 ---
 
-## Фаза 1: Каркас продукта (1–2 недели)
+## Phase 1: Product scaffold (1–2 weeks)
 
-### 4. Выбор стека и репозиторная структура
+### 4. Stack and repository structure
 
-- [ ] Зафиксировать в `docs/ARCHITECTURE.md` (и при необходимости в ADR) выбор бэкенда:
-  - **Django** — быстрее MVP за счёт Django Admin и DRF; удобно для отчётности и интеграций (1С, Python-экосистема).
-  - **NestJS** — единый TypeScript-стек с фронтом, кастомная админка с нуля.
-  - Фронт: при Django — админка встроена или отдельный SPA; при NestJS — React/Vue + UI-библиотека.
-  - БД: PostgreSQL. Очереди: Celery (Django) или Bull/BullMQ (NestJS).
-- [ ] Создать монорепозиторий или раздельные репозитории:
+- [ ] Document in `docs/ARCHITECTURE.md` (and ADR if needed) the backend choice:
+  - **Django** — faster MVP with Django Admin and DRF; good for reporting and integrations (1C, Python ecosystem).
+  - **NestJS** — unified TypeScript stack with frontend; custom admin from scratch.
+  - Frontend: with Django — built-in admin or separate SPA; with NestJS — React/Vue + UI library.
+  - DB: PostgreSQL. Queues: Celery (Django) or Bull/BullMQ (NestJS).
+- [ ] Create monorepo or separate repositories:
   - `apps/api` — REST/GraphQL API.
-  - `apps/admin` — админка.
-  - `apps/tenant-portal` (опционально) — портал арендатора.
-  - `packages/shared` — общие типы, константы, утилиты.
+  - `apps/admin` — admin UI.
+  - `apps/tenant-portal` (optional) — tenant portal.
+  - `packages/shared` — shared types, constants, utilities.
 
-### 5. Минимальный API и БД
+### 5. Minimal API and DB
 
-- [ ] Поднять проект (например `nest new`, или шаблон с Docker).
-- [ ] Добавить Docker/docker-compose: API + PostgreSQL (и при необходимости Redis для очередей).
-- [ ] Описать и внедрить первые сущности домена:
-  - **Property** (объект недвижимости): id, name, address, type, status.
-  - **Unit** (помещение/квартира в объекте): id, property_id, name, area, status.
-  - **Party** (контрагент: арендатор/арендодатель): id, name, type, contacts.
-  - **Contract** (договор): id, unit_id, party_id, dates, amount, status.
-- [ ] Миграции (TypeORM/Prisma/Drizzle — на выбор), без «тяжёлой» бизнес-логики, только схема.
+- [ ] Set up the project (e.g. `nest new`, or a Docker template).
+- [ ] Add Docker/docker-compose: API + PostgreSQL (and Redis for queues if needed).
+- [ ] Design and implement the first domain entities:
+  - **Property** (real estate object): id, name, address, type, status.
+  - **Unit** (unit/room within a property): id, property_id, name, area, status.
+  - **Party** (counterparty: tenant/landlord): id, name, type, contacts.
+  - **Contract**: id, unit_id, party_id, dates, amount, status.
+- [ ] Migrations (TypeORM/Prisma/Drizzle — as preferred), schema only, no heavy business logic.
 
-### 6. Первый сценарий «от начала до конца»
+### 6. First end-to-end scenario
 
-- [ ] Реализовать сценарий: создание объекта → создание помещения → создание контрагента → создание договора (CRUD через API).
-- [ ] Покрыть тестами (unit + хотя бы один e2e на этот сценарий).
-- [ ] Задокументировать в README или `docs/GETTING_STARTED.md`: как поднять окружение и выполнить сценарий через curl/Postman.
+- [ ] Implement: create property → create unit → create party → create contract (CRUD via API).
+- [ ] Add tests (unit + at least one e2e for this scenario).
+- [ ] Document in README or `docs/GETTING_STARTED.md`: how to run the environment and execute the scenario via curl/Postman.
 
-Цель: любой разработчик может склонировать репозиторий и за 15 минут увидеть работающий поток.
-
----
-
-## Фаза 2: Документация и упаковка (3–5 дней)
-
-### 7. Публичная документация
-
-- [ ] `docs/ARCHITECTURE.md` — модули, границы, ключевые решения (уже начат выше).
-- [ ] `docs/ROADMAP.md` — что в Community, что планируется в Enterprise, по фазам.
-- [ ] `docs/API.md` или OpenAPI/Swagger — описание эндпоинтов (можно генерировать из кода).
-- [ ] `CONTRIBUTING.md` — как форкать, ветки, код-ревью, CLA (см. [docs/CONTRIBUTING.md](CONTRIBUTING.md)).
-
-### 8. Релиз «нулевой» версии
-
-- [ ] Версионирование: семантический версионинг (SemVer), тег в Git (например `v0.1.0`).
-- [ ] Changelog: `CHANGELOG.md` с секцией для v0.1.0 («Initial skeleton: properties, units, contracts»).
-- [ ] Сборка и запуск одной командой: `docker-compose up` или `make up` — без ручных шагов для базового сценария.
+Goal: any developer can clone the repository and see a working flow in 15 minutes.
 
 ---
 
-## Чек-лист «первый коммит»
+## Phase 2: Documentation and packaging (3–5 days)
 
-Перед тем как считать «первые шаги» выполненными:
+### 7. Public documentation
 
-| # | Действие | Готово |
-|---|----------|--------|
-| 1 | Репозиторий создан, README и docs на месте | ☐ |
-| 2 | LICENSE (BSL) и порог $100K зафиксированы | ☐ |
-| 3 | CLA выбран и добавлен в репо | ☐ |
-| 4 | Стек зафиксирован в ARCHITECTURE.md | ☐ |
-| 5 | Каркас API + БД (properties, units, contracts) | ☐ |
-| 6 | Один сквозной сценарий работает и описан | ☐ |
-| 7 | Docker/docker-compose поднимает проект | ☐ |
-| 8 | ROADMAP и CONTRIBUTING заполнены | ☐ |
+- [ ] `docs/ARCHITECTURE.md` — modules, boundaries, key decisions (started above).
+- [ ] `docs/ROADMAP.md` — what's in Community, what's planned for Enterprise, by phase.
+- [ ] `docs/API.md` or OpenAPI/Swagger — endpoint description (can be generated from code).
+- [ ] `CONTRIBUTING.md` — how to fork, branches, code review, CLA (see [docs/CONTRIBUTING.md](CONTRIBUTING.md)).
+
+### 8. "Zero" release
+
+- [ ] Versioning: semantic versioning (SemVer), Git tag (e.g. `v0.1.0`).
+- [ ] Changelog: `CHANGELOG.md` with section for v0.1.0 ("Initial skeleton: properties, units, contracts").
+- [ ] One-command build and run: `docker-compose up` or `make up` — no manual steps for the basic scenario.
 
 ---
 
-## Что делать после первых шагов
+## "First commit" checklist
 
-- Начать привлекать первых пользователей/контрибьюторов (сообщества, чаты proptech).
-- Собрать 2–3 кейса внедрения «на себе» или пилотных клиентах.
-- Ввести Enterprise-фичи только после стабилизации Community (см. [ROADMAP.md](ROADMAP.md)).
+Before considering "first steps" complete:
 
-Дальше — [Архитектура](ARCHITECTURE.md) и [Дорожная карта](ROADMAP.md).
+| # | Action | Done |
+|---|--------|------|
+| 1 | Repository created, README and docs in place | ☐ |
+| 2 | LICENSE (BSL) and $100K threshold documented | ☐ |
+| 3 | CLA chosen and added to repo | ☐ |
+| 4 | Stack documented in ARCHITECTURE.md | ☐ |
+| 5 | API + DB scaffold (properties, units, contracts) | ☐ |
+| 6 | One end-to-end scenario working and documented | ☐ |
+| 7 | Docker/docker-compose runs the project | ☐ |
+| 8 | ROADMAP and CONTRIBUTING filled out | ☐ |
+
+---
+
+## What to do after first steps
+
+- Start attracting first users/contributors (communities, proptech chats).
+- Collect 2–3 implementation cases ("on ourselves" or pilot clients).
+- Introduce Enterprise features only after Community stabilizes (see [ROADMAP.md](ROADMAP.md)).
+
+Next — [Architecture](ARCHITECTURE.md) and [Roadmap](ROADMAP.md).

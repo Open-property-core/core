@@ -1,12 +1,12 @@
 # Backend: DDD Django-style (DRF)
 
-Бэкенд строится по идеям **Domain-Driven Design**, адаптированным под Django и DRF: один Django-приложение = один **bounded context**, внутри — разделение на домен, прикладные сервисы и API-адаптеры.
+The backend follows **Domain-Driven Design** adapted to Django and DRF: one Django app = one **bounded context**, with separation into domain, application services, and API adapters.
 
 ---
 
-## Слои внутри приложения (Django app = Bounded Context)
+## Layers inside an app (Django app = Bounded Context)
 
-Зависимости идут **внутрь**: API зависит от сервисов, сервисы — от домена и репозиториев. Домен не знает про HTTP и БД.
+Dependencies point **inward**: API depends on services, services depend on domain and repositories. Domain does not know about HTTP or the database.
 
 ```mermaid
 flowchart LR
@@ -30,54 +30,54 @@ flowchart LR
   infra --> domain
 ```
 
-| Слой | Где в Django app | Ответственность |
-|------|------------------|------------------|
-| **API (вход)** | `views.py`, `serializers.py`, `urls.py` | HTTP, валидация ввода/вывода, вызов сервисов. Минимум бизнес-логики. |
-| **Application (use cases)** | `services.py` или `application/` | Оркестрация: вызывают домен и репозитории, транзакции, права. |
-| **Domain** | `models.py`, при необходимости `domain/` | Сущности, инварианты, доменная логика. Модели Django допускаются как сущности, если логика не размазана по view. |
-| **Infrastructure** | Миграции, внешние вызовы, при необходимости `repositories.py` | Реализация персистентности, интеграции. В простых случаях — только ORM в сервисах. |
+| Layer | Location in Django app | Responsibility |
+|-------|------------------------|----------------|
+| **API (entry)** | `views.py`, `serializers.py`, `urls.py` | HTTP, input/output validation, calling services. Minimal business logic. |
+| **Application (use cases)** | `services.py` or `application/` | Orchestration: call domain and repositories, transactions, permissions. |
+| **Domain** | `models.py`, optionally `domain/` | Entities, invariants, domain logic. Django models may serve as entities if logic is not scattered across views. |
+| **Infrastructure** | Migrations, external calls, optionally `repositories.py` | Persistence, integrations. In simple cases — ORM in services only. |
 
 ---
 
-## Принципы
+## Principles
 
-1. **ViewSet/View** — тонкий адаптер: парсит запрос, вызывает сервис, отдаёт сериализованный ответ. Не содержит правил вида «когда можно расторгнуть договор».
-2. **Сервисы (application)** — сценарии: «создать договор», «активировать договор», «начислить платёж». Работают с моделями (или репозиториями), проверяют права, открывают транзакции.
-3. **Модели (domain)** — сущности и инварианты. Бизнес-правила, которые не зависят от HTTP и БД, живут в моделях (методы) или в маленьких domain-сервисах.
-4. **Сериализаторы** — DTO: вход/выход API. Не дублируют доменную логику; для сложных кейсов данные в сервис передаются явно (например, команда/дато-класс).
+1. **ViewSet/View** — thin adapter: parse request, call service, return serialized response. Does not contain rules like "when a contract can be terminated".
+2. **Services (application)** — scenarios: "create contract", "activate contract", "charge payment". Work with models (or repositories), check permissions, manage transactions.
+3. **Models (domain)** — entities and invariants. Business rules that do not depend on HTTP or DB live in models (methods) or small domain services.
+4. **Serializers** — DTOs: API input/output. Do not duplicate domain logic; for complex cases pass data explicitly to the service (e.g. command/dataclass).
 
 ---
 
-## Структура одного приложения (пример: `contracts`)
+## Structure of one app (example: `contracts`)
 
 ```
 opc/apps/contracts/
   __init__.py
-  models.py          # Domain: Contract, инварианты
-  services.py         # Application: create_contract, activate_contract, ...
-  serializers.py      # API: request/response DTO
-  views.py            # API: ViewSets, вызов services
+  models.py          # Domain: Contract, invariants
+  services.py        # Application: create_contract, activate_contract, ...
+  serializers.py     # API: request/response DTO
+  views.py           # API: ViewSets, calling services
   urls.py
   admin.py
   migrations/
 ```
 
-При росте можно ввести подпапки: `domain/`, `application/`, `api/` — но до необходимости лучше держать плоскую структуру.
+As it grows, subfolders like `domain/`, `application/`, `api/` can be added — but keep a flat structure until necessary.
 
 ---
 
-## Переход от «толстых» ViewSet к сервисам
+## Moving from "fat" ViewSets to services
 
-- **Сейчас:** логика часто в ViewSet или в `perform_create`/`perform_update`. Это допустимо на старте.
-- **Целевое:** для нетривиальных операций выносить в `services.ContractService.create(...)`, а во view вызывать сервис. Сериализатор только валидирует вход и формирует ответ из результата сервиса.
+- **Current:** logic often in ViewSet or `perform_create`/`perform_update`. Acceptable at the start.
+- **Target:** for non-trivial operations, move to `services.ContractService.create(...)` and call the service from the view. Serializer only validates input and builds response from service result.
 
 ---
 
-## Границы контекстов
+## Context boundaries
 
-- **properties** — объекты и помещения (Property, Unit).
-- **parties** — контрагенты (Party).
-- **contracts** — договоры (Contract); зависит от properties.Unit и parties.Party через FK. Межконтекстное взаимодействие — по ID или по доменным событиям (позже), без прямого импорта моделей из другого контекста в доменный слой, где это можно избежать.
-- **core** — общее: аутентификация, утилиты, Celery-таски.
+- **properties** — properties and units (Property, Unit).
+- **parties** — counterparties (Party).
+- **contracts** — contracts (Contract); depends on properties.Unit and parties.Party via FK. Cross-context interaction — by ID or domain events (later), without importing models from another context into the domain layer when avoidable.
+- **core** — shared: authentication, utilities, Celery tasks.
 
-Детали доменной модели (сущности, агрегаты) — в [ARCHITECTURE.md](ARCHITECTURE.md) (раздел «Доменные модули»).
+Domain model details (entities, aggregates) — in [ARCHITECTURE.md](ARCHITECTURE.md) (section "Domain modules").
